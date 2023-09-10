@@ -18,9 +18,6 @@
     let job = document.querySelector(
       ".up-card-section.up-card-list-section.up-card-hover"
     )
-    console.log(job)
-
-    let c = 0
 
     if (job) {
       setInterval(() => {
@@ -66,8 +63,6 @@
 
             job = newJob
           }
-          c++
-          console.log(c)
         }, 4000)
       }, 90000)
     }
