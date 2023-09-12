@@ -8,7 +8,6 @@
     "default_popup": "index.html",
     "default_title": "upwork job notifications"
   },
-  "permissions": ["notifications"],
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
