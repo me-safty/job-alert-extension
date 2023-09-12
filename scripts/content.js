@@ -26,7 +26,7 @@
   }
 
   function getJobAlert() {
-    alert("to use the job alert extention, please click on the page firsr.")
+    alert("to use the (job alert extention), please click on the page firsr.")
     window.addEventListener("load", function () {
       let job = document.querySelector(
         ".up-card-section.up-card-list-section.up-card-hover"
