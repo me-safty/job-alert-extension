@@ -1,13 +1,29 @@
 {
   // {} Block used to avoid setting global variables
 
-  // const audio = new Audio(
-  //   "https://cms-artifacts.motionarray.com/content/motion-array/1068814/Hip_Hop_Sound_Elements_mp3.mp3?Expires=2003734661106&Key-Pair-Id=K2ZDLYDZI2R1DF&Signature=VfhsVwLl9ZkHLOuGaraPFUT-5l-Z0-sV1BcyjON5yja8CjbmE4olL9NrODOfHIC0i5sgzo-hA59Qlf-4D6on~nGLfe4mBfBIHUpB66FF3YgaF6Rxylu4E6KfQn6gAXUR9oMw~Z97qt9~jQb38E4BUogxnBIaGxnEalZIZeBpsJVrhvxbTIdyl4I8t342DxOXhihPMpwQ6S5hi-xN3JlzMwO9zAIrWGD0uP2GEUC~82SxmleEKIVnOk2Q2FsXvFmYmAA-zrjIjHerIM8wrKU8uU2xf0OHRi2IIb5vxbZFroXl9yb5xPr0wea8jlMkaXrury5ZsPuCKZSi5mPCJYGE8A__"
-  // )
+  let key
+  let chatId
 
-  // const comeToMe = new Audio(
-  //   "https://cms-artifacts.motionarray.com/content/motion-array/145884/Devil_Says_Come_To_Me_mp3.mp3?Expires=2003734653332&Key-Pair-Id=K2ZDLYDZI2R1DF&Signature=xLaxikYP7bYpm3o9CxxHvw2HkDbl2AzrD29YjQjDgTr1-594jhXkFTX~PV8aDyp9ywAN3dsXmY2Vkcy1BFbr0m6M4B~o3Kh4vC2Sxy~7VtPRMMCIj2axDZoDcNLUfu15XfWL-Nnc31j-cpTrNwKtwSKbOEOO7b2H7ZwMfNfm330tjaMe3VwRYOiDUWEqgcGSOI~0FgioZaEVDJxgapFVwqAk5WPBN~lDcvSzAWRKcvnq0alwh0~E~8VvCfX9WWYor~RyJ2fdUrXiCXsznlwbFp9GGilAf9hyhpVYm7sEG7bYoeV8MwWgokXaNqxRPimqmenhn8KnkTpRYkh1yw3nHg__"
-  // )
+  chrome.storage.sync.get(["apiKey", "chatId"], function (items) {
+    if (items.apiKey && items.chatId) {
+      key = items.apiKey
+      chatId = items.chatId
+    } else {
+      alert(
+        "you must provied the api token and the chat id to make the messages work"
+      )
+    }
+    console.log(key, chatId, items)
+  })
+
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    console.log(changes, namespace, "key", key, "chat", chatId)
+
+    key = changes.apiKey ? changes.apiKey.newValue : key
+    chatId = changes.chatId ? changes.chatId.newValue : chatId
+
+    console.log(changes, namespace, "key", key, "chat", chatId)
+  })
 
   const knockDoor = new Audio(
     "https://cms-artifacts.motionarray.com/content/motion-array/1297037/Knock_At_The_Door_mp3.mp3?Expires=2003734670657&Key-Pair-Id=K2ZDLYDZI2R1DF&Signature=gFm01Y~XUy5ZaV9Qbb1NkNAxBqw~W41yAd7pkZ3T4hrH64-eRgG2n2nLAvHfRZtHh32yp6uvCBZ7TMFk8-k0UJE47qfFc0vH4mmK23R9IWyp8BlXoklUvNmuIEHgjewGZ1eunytqu8bUtkyRtiUdQhICsz4CVLiAwnBeb4jvqfhk2qzwNZLLV57IrupVx2Ql5FRddSYjFxAV8T3Ibw75Ci1leB8DqAcDpLtsY~A57LGkUKypS2SThxNu1ks0Iccl87h0TJolYOYZqhvN7FCBNaKGDRnZLWq8tDYFmi2yEcmi7JO1Bw8-O7VhLwhV2r45104bdTykdL2Bk64AWx3iFQ__"
@@ -53,16 +69,15 @@
                 newJob.children[1].children[4].children[3].children[1].innerText
               const spent =
                 newJob.children[1].children[4].children[2].children[0].innerText
+              const jobLink =
+                newJob.children[0].children[0].children[1].children[0].href
               const title = "upwork job"
               const icon = ""
               const body = `${name}\n${level} - ${type}\n${prise} - ${rate} ⭐ - ${country} - ${spent}`
               const notification = new Notification(title, { body, icon })
               notification.onclick = (event) => {
                 event.preventDefault()
-                window.open(
-                  newJob.children[0].children[0].children[1].children[0].href,
-                  "_blank"
-                )
+                window.open(jobLink, "_blank")
               }
 
               const playPromise = knockDoor.play()
@@ -71,6 +86,32 @@
                   console.log(error)
                   alert("Please interact with the document first.")
                 })
+              }
+
+              if (key && chatId) {
+                const options = {
+                  method: "POST",
+                  headers: {
+                    accept: "application/json",
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    text: `${name}\n${level} - ${type}\n${prise} - ${rate} ⭐ - ${country} - ${spent} \n${jobLink}`,
+                    parse_mode: "None",
+                    disable_web_page_preview: false,
+                    disable_notification: false,
+                    reply_to_message_id: 0,
+                    chat_id: chatId,
+                  }),
+                }
+
+                fetch(`https://api.telegram.org/bot${key}/sendMessage`, options)
+                  .then((response) => response.json())
+                  .then((response) => console.log(response))
+                  .catch((err) => {
+                    alert("the token or the chatid is wrong")
+                    console.error(err)
+                  })
               }
 
               job = newJob

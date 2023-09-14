@@ -8,7 +8,7 @@
       body {
         background-color: #333;
       }
-      p {
+      h1 {
         font-size: 25px;
         white-space: nowrap;
         font-weight: bold;
@@ -16,9 +16,42 @@
         border-radius: 20px;
         color: #fff;
       }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      p {
+        color: #fff;
+        padding: 0;
+        margin: 5px 0;
+      }
+      button {
+        margin: 5px 0;
+        width: fit-content;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
-    <p>Upwork Job Alert</p>
+    <h1>Upwork Job Alert</h1>
+    <form>
+      <label for="telegram-messages">
+        <p>telegram messages</p>
+        <input type="checkbox" id="telegram-messages" />
+      </label>
+
+      <section>
+        <label for="telegram-api-key">
+          <p>telegram token</p>
+          <input id="telegram-api-key" type="text" />
+        </label>
+        <label for="telegram-chat-id">
+          <p>telegram chat id</p>
+          <input id="telegram-chat-id" type="text" />
+        </label>
+        <button>save</button>
+      </section>
+    </form>
   </body>
+  <script src="index.js"></script>
 </html>
