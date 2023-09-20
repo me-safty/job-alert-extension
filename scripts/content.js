@@ -86,29 +86,11 @@
             ".up-card-section.up-card-list-section.up-card-hover"
           )
           if (job.id !== newJob.id) {
-            const name = newJob.children[0].children[0].children[1].innerText
-            const level =
-              newJob.children[1].children[0].children[0].children[1].innerText
-            const type =
-              newJob.children[1].children[0].children[0].children[0].innerText
-            const prise =
-              newJob.children[1].children[0].children[0].children[2].innerText
-            // const rate = [
-            //   ...newJob.children[1].children[4].children[1].children[0]
-            //     .children[0].children[2].children,
-            // ].at(-1).innerText
-            const rate = "fhffh"
-            const country =
-              newJob?.children[1]?.children[4]?.children[3]?.children[1]
-                ?.innerText
-            const spent =
-              newJob.children[1].children[4].children[2].children[0].innerText
-            const jobLink =
-              newJob.children[0].children[0].children[1].children[0].href
-            const title = "upwork job"
-            const icon = ""
-            const body = `${name}\n${level} - ${type}\n${prise} - ${rate} ⭐ - ${country} - ${spent}`
-            const notification = new Notification(title, { body, icon })
+            const body = getJobDescription(newJob)
+            const notification = new Notification("upwork job", {
+              body,
+            })
+
             notification.onclick = (event) => {
               event.preventDefault()
               window.open(jobLink, "_blank")
@@ -122,12 +104,7 @@
               })
             }
 
-            telegramMessages(
-              key,
-              chatId,
-              isTelegramMessagesOn,
-              `${name}\n${level} - ${type}\n${prise} - ${rate} ⭐ - ${country} - ${spent} \n${jobLink}`
-            )
+            telegramMessages(key, chatId, isTelegramMessagesOn, body)
 
             job = newJob
           }
@@ -163,4 +140,25 @@ function telegramMessages(key, chatId, isTelegramMessagesOn, notificationText) {
         console.error(err)
       })
   }
+}
+
+function getJobDescription(job) {
+  const name = job.children[0].children[0].children[1].innerText
+  const level = job.children[1].children[0].children[0].children[1].innerText
+  const type = job.children[1].children[0].children[0].children[0].innerText
+  const prise = job.children[1].children[0].children[0].children[2].innerText
+  const rate = +[
+    ...job.children[1].children[4].children[1].children[0].children[0]
+      .children[2].children,
+  ]
+    .at(-1)
+    .innerText.split(" ")[2]
+  const country =
+    job?.children[1]?.children[4]?.children[3]?.children[1]?.innerText
+  const spent = job.children[1].children[4].children[2].children[0].innerText
+  const jobLink = job.children[0].children[0].children[1].children[0].href
+
+  return `${name}\n${level} - ${type}\n${prise} - ${rate.toFixed(
+    2
+  )} star - ${country} - ${spent} \n${jobLink}`
 }
