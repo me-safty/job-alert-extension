@@ -1,18 +1,18 @@
 {
-  "name": "upwork job notifications",
-  "version": "1.0.0",
-  "description": "upwork job notifications",
-  "manifest_version": 3,
-  "author": "Mohamed Safty",
-  "action": {
-    "default_popup": "index.html",
-    "default_title": "upwork job notifications"
-  },
-  "permissions": ["storage"],
-  "content_scripts": [
-    {
-      "js": ["scripts/content.js"],
-      "matches": ["https://www.upwork.com/nx/jobs/search/*"]
-    }
-  ]
+	"name": "upwork job notifications",
+	"version": "1.0.0",
+	"description": "upwork job notifications",
+	"manifest_version": 3,
+	"author": "Mohamed Safty",
+	"action": {
+		"default_popup": "index.html",
+		"default_title": "upwork job notifications"
+	},
+	"permissions": ["storage"],
+	"content_scripts": [
+		{
+			"js": ["scripts/content.js"],
+			"matches": ["https://www.upwork.com/nx/search/*"]
+		}
+	]
 }
