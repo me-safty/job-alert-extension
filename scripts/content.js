@@ -65,7 +65,7 @@
 						job = newJob
 					}
 				}, 3000)
-			}, 10000)
+			}, 60000)
 		}
 	}
 
@@ -169,15 +169,13 @@
 		openSearchBtn.click()
 
 		setTimeout(() => {
-			const searchInput = document.querySelector("input#anyWords")
+			const searchInput = document.querySelector("input#excludeWords")
 			const searchBtn = document.querySelector("[data-test='submit-button']")
 			var inputEvent = new Event("input", {
 				bubbles: true,
 				cancelable: true,
 			})
-			searchInput.value = `${"frontend react NOT wordpress NOT shopify NOT webflow"}${
-				arr[randomNum]
-			}`
+			searchInput.value = `${"wordpress webflow shopify"}${arr[randomNum]}`
 			searchInput.dispatchEvent(inputEvent)
 
 			searchBtn.click()
