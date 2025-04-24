@@ -6,7 +6,12 @@
 	"author": "Mohamed Safty",
 	"action": {
 		"default_popup": "index.html",
-		"default_title": "upwork job notifications"
+		"default_title": "upwork job notifications",
+		"icon": {
+			"16": "images/icon.jpeg",
+			"48": "images/icon.jpeg",
+			"128": "images/icon.jpeg"
+		}
 	},
 	"permissions": ["storage"],
 	"content_scripts": [
