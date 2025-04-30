@@ -3,34 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/style/style.css" />
     <title>Document</title>
-    <style>
-      body {
-        background-color: #333;
-      }
-      h1 {
-        font-size: 25px;
-        white-space: nowrap;
-        font-weight: bold;
-        padding: 10px 20px;
-        border-radius: 20px;
-        color: #fff;
-      }
-      form {
-        display: flex;
-        flex-direction: column;
-      }
-      p {
-        color: #fff;
-        padding: 0;
-        margin: 5px 0;
-      }
-      button {
-        margin: 5px 0;
-        width: fit-content;
-        cursor: pointer;
-      }
-    </style>
   </head>
   <body>
     <h1>Upwork Job Alert</h1>
@@ -49,7 +23,6 @@
         <p>telegram messages</p>
         <input type="checkbox" id="telegram-messages" />
       </label>
-
       <section>
         <label for="telegram-api-key">
           <p>telegram token</p>
@@ -61,6 +34,18 @@
         </label>
         <input type="submit" value="save" id="save" />
       </section>
+      <!-- <section>
+        <p>تفعيل</p>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggleCheckbox" checked>
+          <span class="slider"></span>
+        </label>
+      </section>
+      <section>
+        <lable for="researchingTime">researching Every:</lable>
+        <input type="number" id="researchingTime" min="1" max="60" />
+        <span>minutes</span>
+      </section> -->
     </form>
   </body>
   <script src="index.js"></script>

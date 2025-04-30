@@ -1,0 +1,75 @@
+body {
+  background-color: #333;
+}
+h1 {
+  font-size: 25px;
+  white-space: nowrap;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 20px;
+  color: #fff;
+}
+form {
+  display: flex;
+  flex-direction: column;
+}
+p {
+  color: #fff;
+  padding: 0;
+  margin: 5px 0;
+}
+button {
+  margin: 5px 0;
+  width: fit-content;
+  cursor: pointer;
+}
+
+/* .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px; 
+  height: 20px; 
+}
+
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: red; 
+  transition: 0.4s;
+  border-radius: 20px; 
+}
+
+
+.toggle-switch input:checked + .slider {
+  background-color: green; 
+}
+
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 16px; 
+  width: 16px; 
+  left: 2px; 
+  bottom: 2px; 
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%; 
+}
+
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(20px); 
+} */
