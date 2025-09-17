@@ -27,7 +27,7 @@ telegramMessagesCheckBox.addEventListener("change", () => {
 		chrome.storage.local.set(
 			{ isTelegramMessagesOn: telegramMessagesCheckBox.checked },
 			function () {
-				console.log(isTelegramMessagesOn, telegramMessagesCheckBox.checked)
+				console.log("isTelegramMessagesOn", telegramMessagesCheckBox.checked)
 			}
 		)
 	} else if (apiInput.value && chatIdInput.value) {
