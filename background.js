@@ -1,8 +1,12 @@
+// ===================[ BACKGROUND SCRIPT ]===================
+
+// الاستماع للرسائل من الـ popup
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action === "generateProposal") {
     const description = message.description;
 
     try {
+      // إرسال الوصف لـ backend على localhost
       const response = await fetch("http://localhost:3000/gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -12,12 +16,12 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const data = await response.json();
       const proposal = data.proposal || "مافيش رد من Gemini";
 
-      // افتح صفحة الريأكت لعرض الاقتراح
-      chrome.tabs.create({
-        url: chrome.runtime.getURL("proposal.html"),
+      // ✅ بدلاً من فتح صفحة React جديدة، خزنه في chrome.storage
+      chrome.storage.local.set({ latestProposal: proposal }, () => {
+        console.log("Proposal saved to storage, no new tab opened");
       });
 
-      // بعت النتيجة لأي صفحة مفتوحة من الإكستنشن
+      // إرسال النتيجة لأي صفحة مفتوحة من الإكستنشن
       chrome.runtime.sendMessage({
         action: "showProposal",
         proposal,
@@ -27,3 +31,5 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
   }
 });
+
+// ===================[ END OF BACKGROUND SCRIPT ]===================
