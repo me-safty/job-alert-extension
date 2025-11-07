@@ -162,15 +162,15 @@ function getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job) {
   setTimeout(() => {
     const jobDetails = getJobDescription(job);
 
-    // if (
-    //   jobDetails &&
-    //   jobDetails.rate >= 4 &&
-    //   !jobDetails.description.includes("hrs/week") &&
-    //   !jobDetails.description.includes("hourly")
-    // ) {
+    if (
+      jobDetails &&
+      jobDetails.rate >= 4 &&
+      !jobDetails.description.includes("hrs/week") &&
+      !jobDetails.description.includes("hourly")
+    ) {
       const { description, link, title } = jobDetails;
       sendChromeNotification(title, description, link, false);
-    // }
+    }
 
     setTimeout(() => {
       const closingButton = document.querySelector(".d-none.d-md-flex.air3-slider-prev-btn");
