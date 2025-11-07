@@ -1,23 +1,39 @@
 {
-	"name": "upwork job notifications",
-	"version": "1.0.0",
-	"description": "upwork job notifications",
-	"manifest_version": 3,
-	"author": "Mohamed Safty",
-	"action": {
-		"default_popup": "index.html",
-		"default_title": "upwork job notifications",
-		"icon": {
-			"16": "images/icon.jpeg",
-			"48": "images/icon.jpeg",
-			"128": "images/icon.jpeg"
-		}
-	},
-	"permissions": ["storage"],
-	"content_scripts": [
-		{
-			"js": ["scripts/content.js"],
-			"matches": ["https://www.upwork.com/nx/search/*"]
-		}
-	]
+  "manifest_version": 3,
+  "name": "Upwork Job Helper",
+  "version": "1.0",
+  "description": "Extension to read job data from Upwork and generate proposals using Gemini.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "*://www.upwork.com/*",
+    "http://localhost:3000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://www.upwork.com/*"],
+      "js": ["scripts/content.js"]
+    }
+  ],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
 }
+
