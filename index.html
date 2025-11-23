@@ -4,21 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/style/style.css" />
-    <title>Document</title>
+    <title>Upwork Job Alert</title>
   </head>
   <body>
     <h1>Upwork Job Alert</h1>
     <form>
-      <!-- <label for="telegram-messages">
-        <p>notifications</p>
-        <input type="checkbox" id="telegram-messages" />
-      </label> -->
-
-      <!-- <label for="notification-sound">
-        <p>notification sound</p>
-        <input type="checkbox" id="notification-sound" />
-      </label> -->
-
       <label for="telegram-messages">
         <p>telegram messages</p>
         <input type="checkbox" id="telegram-messages" />
@@ -32,22 +22,14 @@
           <p>telegram chat id</p>
           <input id="telegram-chat-id" required type="text" />
         </label>
-        <input type="submit" value="save" id="save" />
+        <input type="button" value="save" id="save" />
       </section>
-      <button id="cool-btn" class="cool-btn">Get Job Title</button>
 
-      <!-- <section>
-        <p>تفعيل</p>
-        <label class="toggle-switch">
-          <input type="checkbox" id="toggleCheckbox" checked>
-          <span class="slider"></span>
-        </label>
-      </section>
-      <section>
-        <lable for="researchingTime">researching Every:</lable>
-        <input type="number" id="researchingTime" min="1" max="60" />
-        <span>minutes</span>
-      </section> -->
+      <textarea id="notes-box" rows="6" placeholder="Write your notes for the proposal here..."></textarea>
+      <button type="button" id="save-btn">Save Notes</button>
+      <div id="message" style="display:none;">Saved successfully!</div>
+
+      <button type="button" id="cool-btn" class="cool-btn">Get Job Title</button>
     </form>
   </body>
   <script src="index.js"></script>

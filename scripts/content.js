@@ -104,16 +104,7 @@ function run() {
       console.log("No job found on the page");
       return;
     }
-
-    if (isJobAlreadyAlerted(job.dataset.testKey)) {
-      console.log("No new job detected");
-      sendChromeNotification("No new job detected", "No new job detected", "https://www.upwork.com/nx/search/");
-      return;
-    }
-
     getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job);
-    console.log("New job detected");
-    sendChromeNotification("New job detected", "New job detected", "https://www.upwork.com/nx/search/");
   });
 }
 

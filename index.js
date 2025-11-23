@@ -1,72 +1,38 @@
-// =======================
-// popup.js
-// =======================
-
-// عناصر التليجرام
 const telegramMessagesCheckBox = document.querySelector("#telegram-messages")
 const apiInput = document.querySelector("#telegram-api-key")
 const chatIdInput = document.querySelector("#telegram-chat-id")
 const saveBtn = document.querySelector("#save")
+const notesBox = document.getElementById("notes-box")
+const saveNotesBtn = document.getElementById("save-btn")
+const message = document.getElementById("message")
 
 let apiKey, chatId
 
-// جلب الإعدادات المحفوظة
+// جلب الإعدادات والملاحظات المحفوظة
 chrome.storage.local.get(
-  ["apiKey", "chatId", "isTelegramMessagesOn"],
+  ["apiKey", "chatId", "isTelegramMessagesOn", "notes"],
   function (items) {
-    apiInput.value = items.apiKey ? items.apiKey : ""
+    apiInput.value = items.apiKey || ""
+    chatIdInput.value = items.chatId || ""
     apiKey = apiInput.value
-    chatIdInput.value = items.chatId ? items.chatId : ""
     chatId = chatIdInput.value
-    telegramMessagesCheckBox.checked = items.isTelegramMessagesOn
-      ? items.isTelegramMessagesOn
-      : false
-    console.log("Settings retrieved", items)
+    telegramMessagesCheckBox.checked = items.isTelegramMessagesOn || false
+    if (items.notes) notesBox.value = items.notes
   }
 )
 
-// onCheckBoxChange(telegramMessagesCheckBox, "isTelegramMessagesOn")
-
-// تفعيل أو تعطيل الرسائل
-telegramMessagesCheckBox.addEventListener("change", () => {
-  if (apiInput.value && chatIdInput.value && apiKey && chatId) {
-    chrome.storage.local.set(
-      { isTelegramMessagesOn: telegramMessagesCheckBox.checked },
-      function () {
-        console.log("isTelegramMessagesOn", telegramMessagesCheckBox.checked)
-      }
-    )
-  } else if (apiInput.value && chatIdInput.value) {
-    telegramMessagesCheckBox.checked = false
-    alert("plz click on the save btn first")
-  } else {
-    telegramMessagesCheckBox.checked = false
-    alert("plz provide the token and the chatId first")
-  }
+// حفظ الملاحظات عند الضغط على Save
+saveNotesBtn.addEventListener("click", () => {
+  const notes = notesBox.value.trim()
+  chrome.storage.local.set({ notes }, () => {
+    message.style.display = "block"
+    setTimeout(() => (message.style.display = "none"), 2000)
+  })
 })
 
-// حفظ إعدادات التليجرام
-saveBtn.onclick = () => {
-  if (apiInput.value && chatIdInput.value) {
-    chrome.storage.local.set(
-      { apiKey: apiInput.value, chatId: chatIdInput.value },
-      function () {
-        console.log("Settings saved")
-        alert("Settings saved")
-      }
-    )
-  }
-}
-console.log("Settings saved")
-
-// =======================
-// زرار جلب وصف الوظيفة وفتح localhost
-// =======================
+// زر جلب الوصف وفتح React
 document.getElementById("cool-btn").addEventListener("click", async () => {
-  console.log("Button clicked!")
-
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-
   if (!tab) {
     alert("افتح صفحة Upwork أولاً!")
     return
@@ -78,7 +44,6 @@ document.getElementById("cool-btn").addEventListener("click", async () => {
       func: () => {
         const url = window.location.href
         let el
-
         if (url.includes("details")) {
           el = document.querySelector('[data-test="Description Description"]')
         } else {
@@ -87,37 +52,30 @@ document.getElementById("cool-btn").addEventListener("click", async () => {
             el = jobTile.children[2].children[2]
           }
         }
-
         return el ? el.innerText.trim() : "مش لاقي وصف الوظيفة"
       },
     },
     (results) => {
       const jobDescription = results?.[0]?.result
-      console.log("Job Description:", jobDescription)
-
       if (jobDescription && jobDescription !== "مش لاقي وصف الوظيفة") {
-        // ✅ نبعته للـ background
-        chrome.runtime.sendMessage({
-          action: "generateProposal",
-          description: jobDescription,
+        // جلب الملاحظات من localStorage
+        chrome.storage.local.get(["notes"], (res) => {
+          const notes = res.notes || ""
+          const finalText = jobDescription + (notes ? "\n\n" + notes : "")
+          const reactAppUrl =
+            "http://localhost:5173/?desc=" +
+            encodeURIComponent(finalText)
+          chrome.tabs.create({ url: reactAppUrl, active: true })
+
+          // إرسال الوصف + الملاحظات للـ background إذا محتاج
+          chrome.runtime.sendMessage({
+            action: "generateProposal",
+            description: finalText,
+          })
         })
-
-        // ✅ فتح صفحة React localhost فقط في تبويب جديد
-        const reactAppUrl =
-          "http://localhost:5173/?desc=" + encodeURIComponent(jobDescription)
-
-        chrome.tabs.create({ url: reactAppUrl, active: true })
       } else {
         alert("لم يتم العثور على وصف الوظيفة!")
       }
     }
   )
 })
-
-// function onCheckBoxChange(checkBox, key) {
-//   checkBox.addEventListener("change", () => {
-//     chrome.storage.local.set({ [key]: checkBox.checked }, function () {
-//       console.log(key, checkBox.checked)
-//     })
-//   })
-// }

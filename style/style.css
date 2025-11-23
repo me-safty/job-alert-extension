@@ -45,7 +45,19 @@ button {
   transform: translateY(0);
   box-shadow: 0 3px 8px rgba(99, 102, 241, 0.3);
 }
-
+body { font-family: sans-serif; padding: 1rem; width: 300px; }
+    textarea { margin-top: 5px; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px; }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      width: 100%;
+    }
+    #message { margin-top: 10px; color: green; font-weight: bold; display: none; }
 /* .toggle-switch {
   position: relative;
   display: inline-block;
