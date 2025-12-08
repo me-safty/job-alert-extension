@@ -1,34 +1,43 @@
 // ===================[ VARIABLES ]===================
-let
+let apiKey,
+    chatId,
+    isTelegramMessagesOn = false,
+    waitingTime_getJobAlert = 15 * 60 * 1000, // 15 دقيقة
+    waitingTime_afterSearching = 15000;
+
+let savedSalaryType, savedMinHire, savedMaxHire, savedMinRate, savedMaxRate;
+
+let name, level, type, priceWord;
+let statsElement, statsText, divElement, divText;
+let rateElement, rate, country, spent;
+let jobLink, connectElement, requiredConnects, getEllipsis, jobDescription, jobSalaryType;
+
+// ===================[ GET SAVED SETTINGS ]===================
+chrome.storage.local.get(
+  ["salaryType", "minHire", "maxHire", "minRate", "maxRate", "apiKey", "chatId", "isTelegramMessagesOn"],
+  (items) => {
+    savedSalaryType = items.salaryType;
+    savedMinHire = items.minHire;
+    savedMaxHire = items.maxHire;
+    savedMinRate = items.minRate !== undefined ? parseFloat(items.minRate).toFixed(1) : undefined;
+    savedMaxRate = items.maxRate !== undefined ? parseFloat(items.maxRate).toFixed(1) : undefined;
+
+    apiKey = items.apiKey;
+    chatId = items.chatId;
+    isTelegramMessagesOn = items.isTelegramMessagesOn || false;
+
+    console.log("✅ Saved Settings loaded in content.js:", {
+  salaryType: savedSalaryType,
+  minHire: savedMinHire !== undefined ? savedMinHire + "%" : undefined,
+  maxHire: savedMaxHire !== undefined ? savedMaxHire + "%" : undefined,
+  minRate: savedMinRate,
+  maxRate: savedMaxRate,
   apiKey,
   chatId,
-  isTelegramMessagesOn = false,
-  waitingTime_getJobAlert = 5 * 60 * 1000, // 5 دقائق = 300000 ملي ثانية
-  waitingTime_afterSearching = 15000;
-
-// 
-
-// ===================[ STORAGE SECTION ]===================
-// chrome.storage.local.get(
-//   ["apiKey", "chatId", "isTelegramMessagesOn"],
-//   function (items) {
-//     isTelegramMessagesOn = items.isTelegramMessagesOn || false;
-//     apiKey = items.apiKey;
-//     chatId = items.chatId;
-//   }
-// );
-
-// chrome.storage.onChanged.addListener((changes) => {
-//   if (changes.isTelegramMessagesOn) {
-//     isTelegramMessagesOn = changes.isTelegramMessagesOn.newValue;
-//   }
-//   if (changes.apiKey) {
-//     apiKey = changes.apiKey.newValue;
-//   }
-//   if (changes.chatId) {
-//     chatId = changes.chatId.newValue;
-//   }
-// });
+  isTelegramMessagesOn
+});
+  }
+);
 
 // ===================[ TELEGRAM NOTIFICATION ]===================
 function sendTelegramMessage(apiKey, chatId, isTelegramMessagesOn, notificationText) {
@@ -52,8 +61,8 @@ function sendTelegramMessage(apiKey, chatId, isTelegramMessagesOn, notificationT
     fetch(`https://api.telegram.org/bot${apiKey}/sendMessage`, options)
       .then((response) => response.json())
       .then((response) => {
-        if (response.ok === false) {
-          alert("the token or the chatId is wrong");
+        if (!response.ok) {
+          console.error("Telegram error:", response);
         }
       })
       .catch((err) => console.error(err));
@@ -78,67 +87,37 @@ function sendChromeNotification(title = "new job", body, link, silent = true) {
   };
 }
 
-// ===================[ STORAGE HANDLERS ]===================
-const getJobStorageValues = (jobId) => {
-  const searchInput = document.querySelector('input[aria-labelledby="search-bar-label"]');
-  const keyName = `lastJobTestKey-${searchInput.value}`;
-  return {
-    keyName,
-    currentJobKey: `${jobId}-${searchInput.value}`,
-    lastJobTestKey: localStorage.getItem(keyName)
-  };
-};
-
-const isJobAlreadyAlerted = (jobId) => {
-  const { currentJobKey, lastJobTestKey } = getJobStorageValues(jobId);
-  return currentJobKey === lastJobTestKey;
-};
-
-// ===================[ MAIN RUN FUNCTION ]===================
-function run() {
-  window.addEventListener("load", () => {
-    console.log("Page loaded");
-    let job = document.querySelector(".job-tile.air3-card.air3-card-list");
-
-    if (!job) {
-      console.log("No job found on the page");
-      return;
-    }
-    getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job);
-  });
-}
-
 // ===================[ JOB DESCRIPTION PARSER ]===================
 function getJobDescription(job) {
   try {
-    const name = job?.children[1]?.children[0]?.children[1]?.children[0]?.children[0]?.innerText;
-    const level = job?.children[2]?.children[1]?.children[1]?.innerText;
-    const type = job?.children[2]?.children[1]?.children[0]?.innerText;
-    const priceWord = job?.children[2]?.children[1]?.children[2]?.children[1]?.innerText;
-    const price = priceWord && priceWord.length > 40 ? "hourly" : priceWord;
+    name = job?.children[1]?.children[0]?.children[1]?.children[0]?.children[0]?.innerText;
+    level = job?.children[2]?.children[1]?.children[1]?.innerText;
+    type = job?.children[2]?.children[1]?.children[0]?.innerText;
+    priceWord = job?.children[2]?.children[1]?.children[2]?.children[1]?.innerText;
 
-    const statsElement = document.querySelector('li[data-qa="client-job-posting-stats"]');
-    const statsText = statsElement ? statsElement.innerText : "N/A";
-    const divElement = document.querySelector('div[data-qa="client-hires"]');
-    const divText = divElement ? divElement.innerText : "N/A";
+    statsElement = document.querySelector('li[data-qa="client-job-posting-stats"]');
+    statsText = statsElement ? statsElement.innerText : "N/A";
+    divElement = document.querySelector('div[data-qa="client-hires"]');
+    divText = divElement ? divElement.innerText : "N/A";
 
-    const rateElement = job?.children[2]?.children[0]?.children[1]?.children[0]?.children[0]?.children[0]?.children[3];
-    const rate = rateElement ? rateElement.innerText : "N/A";
-    const country = job?.children[2]?.children[0]?.children[3]?.children[0]?.innerText;
-    const spent = `spent: ${job?.children[2]?.children[0]?.children[2]?.children[0]?.children[0]?.innerText}`;
+    rateElement = job?.children[2]?.children[0]?.children[1]?.children[0]?.children[0]?.children[0]?.children[3];
+    rate = rateElement ? parseFloat(rateElement.innerText).toFixed(1) : 0.0;
+    country = job?.children[2]?.children[0]?.children[3]?.children[0]?.innerText;
+    spent = `spent: ${job?.children[2]?.children[0]?.children[2]?.children[0]?.children[0]?.innerText}`;
 
-    const jobLink = job?.children[1].children[0].children[1].children[0].children[0].children[0].href;
-    const connectElement = document.querySelector('div[data-test="ConnectsDesktop"]');
-    const requiredConnects = connectElement ? connectElement.children[0].innerText : "Not Found";
+    jobLink = job?.children[1].children[0].children[1].children[0].children[0].children[0].href;
+    connectElement = document.querySelector('div[data-test="ConnectsDesktop"]');
+    requiredConnects = connectElement ? connectElement.children[0].innerText : "Not Found";
 
-    const getEllipsis = (text) => (text && text.length > 20 ? text.slice(0, 30) + "..." : text);
-    const jobDescription = document.querySelector('[data-test="Description Description"]').innerText;
+    getEllipsis = (text) => (text && text.length > 20 ? text.slice(0, 30) + "..." : text);
+    jobDescription = document.querySelector('[data-test="Description Description"]')?.innerText || "N/A";
+    jobSalaryType = job?.children[2]?.children[1]?.children[0]?.innerText || null;
 
     return {
-      description: `${price}, ${rate}⭐︎, ${statsText}, ${country}`,
+      description: `${priceWord}, ${rate}⭐︎, ${statsText}, ${country}`,
       link: jobLink,
       title: getEllipsis(name),
-      rate: parseFloat(rate) || 0,
+      rate: parseFloat(rate)
     };
   } catch (error) {
     console.error("Error constructing job description:", error);
@@ -152,15 +131,23 @@ function getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job) {
 
   setTimeout(() => {
     const jobDetails = getJobDescription(job);
+    jobSalaryType = job?.children[2]?.children[1]?.children[0]?.innerText.slice(0, 3);
 
-    if (
-      jobDetails &&
-      jobDetails.rate >= 4 &&
-      !jobDetails.description.includes("hrs/week") &&
-      !jobDetails.description.includes("hourly")
-    ) {
-      const { description, link, title } = jobDetails;
-      sendChromeNotification(title, description, link, false);
+    const hireRate = parseFloat(document.querySelector('li[data-qa="client-job-posting-stats"]').children[1].innerText.slice(0, 3));
+    const jobRate = parseFloat(jobDetails.rate) || 0;
+
+    // تحقق من الـ Salary Type
+    const typeMatch = (savedSalaryType === "Hourly" && jobSalaryType === "Hou") ||
+                      (savedSalaryType === "Fixed price" && jobSalaryType === "Fix");
+
+    // تحقق من الـ Hire Rate والـ Job Rate
+    const statsLi = document.querySelector('li[data-qa="client-job-posting-stats"]');
+    console.log(hireRate);
+    const hireRateMatch = hireRate >= savedMinHire && hireRate <= savedMaxHire;
+    const jobRateMatch = jobRate >= savedMinRate && jobRate <= savedMaxRate;
+
+    if (typeMatch && hireRateMatch && jobRateMatch) {
+      sendChromeNotification(jobDetails.title, jobDetails.description, jobDetails.link, false);
     }
 
     setTimeout(() => {
@@ -173,9 +160,35 @@ function getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job) {
   localStorage.setItem(keyName, currentJobKey);
 }
 
+// ===================[ STORAGE HELPERS ]===================
+const getJobStorageValues = (jobId) => {
+  const searchInput = document.querySelector('input[aria-labelledby="search-bar-label"]');
+  const keyName = `lastJobTestKey-${searchInput?.value}`;
+  return {
+    keyName,
+    currentJobKey: `${jobId}-${searchInput?.value}`,
+    lastJobTestKey: localStorage.getItem(keyName)
+  };
+};
+
+// ===================[ MAIN RUN FUNCTION ]===================
+function run() {
+  window.addEventListener("load", () => {
+    console.log("Page loaded");
+    let job = document.querySelector(".job-tile.air3-card.air3-card-list");
+    if (!job) return console.log("No job found on the page");
+
+    const { currentJobKey, keyName } = getJobStorageValues(job.dataset.testKey);
+    const savedKey = localStorage.getItem(keyName);
+
+    if (savedKey !== currentJobKey) {
+      getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job);
+    } else {alert ("لا يوجد وظائف جديدة في هذه الصفحة");}
+  });
+}
+
 // ===================[ NOTIFICATION PERMISSION ]===================
-if (!("Notification" in window))
-  alert("This browser does not support desktop notification");
+if (!("Notification" in window)) alert("This browser does not support desktop notification");
 else if (Notification.permission === "granted") run();
 else if (Notification.permission !== "denied")
   Notification.requestPermission().then((permission) => {
@@ -185,36 +198,24 @@ else if (Notification.permission !== "denied")
 // ===================[ PAGE RELOAD TIMER ]===================
 setTimeout(() => {
   const searchInput = document.querySelector('input[aria-labelledby="search-bar-label"]');
-  if (searchInput.value.length > 0) {
+  if (searchInput?.value.length > 0) {
     console.log("Page reloaded");
     location.reload();
-  } else {
-    console.log("input is empty");
   }
 }, waitingTime_getJobAlert);
 
-// content.js
-console.log("✅ content.js loaded on Upwork page");
-
+// ===================[ LISTENER FOR DESCRIPTION REQUEST ]===================
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getJobDescription") {
     const url = window.location.href;
     let el;
-
-    // لو اللينك فيه كلمة details
     if (url.includes("details")) {
       el = document.querySelector('[data-test="Description Description"]');
-    } 
-    // لو اللينك مفيهوش كلمة details
-    else {
+    } else {
       const jobTile = document.querySelector(".job-tile.air3-card.air3-card-list");
-        el = jobTile.children[2].children[2];
+      el = jobTile?.children[2]?.children[2];
     }
-
     const description = el ? el.innerText.trim() : "مش لاقي وصف الوظيفة";
     sendResponse({ description });
   }
 });
-
-
-

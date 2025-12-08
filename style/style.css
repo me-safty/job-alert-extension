@@ -1,109 +1,215 @@
+/* ===== Global ===== */
 body {
-  background-color: #333;
-}
-h1 {
-  font-size: 25px;
-  white-space: nowrap;
-  font-weight: bold;
-  padding: 10px 20px;
-  border-radius: 20px;
+  background: #1f1f2e;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  width: 360px;
   color: #fff;
-}
-form {
-  display: flex;
-  flex-direction: column;
-}
-p {
-  color: #fff;
-  padding: 0;
-  margin: 5px 0;
-}
-button {
-  margin: 5px 0;
-  width: fit-content;
-  cursor: pointer;
-}
-.cool-btn {
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  margin: 0;
 }
 
-.cool-btn:hover {
-  transform: translateY(-1px);
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+/* ===== Card Style ===== */
+.card {
+  background: #2c2c3e;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
+}
+
+.card h2 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #dcdcdc;
+}
+
+/* ===== Inputs ===== */
+input[type="text"],
+input[type="number"],
+textarea {
+  padding: 10px 12px;
+  background: #33334d;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 10px;
+  margin: 5px 0 15px;
+  outline: none;
+  font-size: 16px;
+  transition: 0.25s;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+}
+/* ===== Custom Checkboxes ===== */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.custom-checkbox input {
+  display: none;
+}
+
+.custom-checkbox .checkmark {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #555;
+  border-radius: 6px;
+  display: inline-block;
+  position: relative;
+  transition: 0.3s;
+}
+
+.custom-checkbox input:checked + .checkmark {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+.custom-checkbox input:checked + .checkmark::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+/* ===== Radio Buttons ===== */
+.radio-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #33334d;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #555;
+  transition: 0.2s;
+}
+
+.radio input {
+  width: 18px;
+  height: 18px;
+}
+
+.radio:hover {
+  border-color: #6366f1;
+}
+
+/* ===== Buttons ===== */
+button,
+input[type="button"] {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  border: none;
+  color: white;
+  padding: 12px 0;
+  font-size: 16px;
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s;
+  margin-top: 10px;
+}
+
+button:hover,
+input[type="button"]:hover {
+  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
-.cool-btn:active {
+button:active,
+input[type="button"]:active {
   transform: translateY(0);
-  box-shadow: 0 3px 8px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
 }
-body { font-family: sans-serif; padding: 1rem; width: 300px; }
-    textarea { margin-top: 5px; width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px; }
-    button {
-      padding: 10px 20px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s;
-      width: 100%;
-    }
-    #message { margin-top: 10px; color: green; font-weight: bold; display: none; }
-/* .toggle-switch {
+
+/* ===== Success Messages ===== */
+#success-msg,
+#message {
+  background: #10b981;
+  padding: 10px;
+  margin-top: 10px;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  display: none;
+}
+
+/* ===== Inputs with % unit ===== */
+.input-wrapper,
+.hire-wrapper {
   position: relative;
-  display: inline-block;
-  width: 40px; 
-  height: 20px; 
+  margin-bottom: 15px;
 }
 
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.input-wrapper input,
+.hire-wrapper input {
+  padding: 10px 35px 10px 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  border: 1px solid #555;
+  outline: none;
+  background: #33334d;
+  color: #fff;
 }
 
+.input-wrapper input:focus,
+.hire-wrapper input:focus {
+  border-color: #6366f1;
+}
 
-.slider {
+.input-wrapper .unit,
+.hire-wrapper .unit {
   position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: red; 
-  transition: 0.4s;
-  border-radius: 20px; 
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #ccc;
+  pointer-events: none;
 }
 
+/* ===== Adjust Widths ===== */
 
-.toggle-switch input:checked + .slider {
-  background-color: green; 
+#telegram-api-key,
+#telegram-chat-id,
+textarea {
+  width: 90%;
 }
-
-
-.slider::before {
-  position: absolute;
-  content: "";
-  height: 16px; 
-  width: 16px; 
-  left: 2px; 
-  bottom: 2px; 
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 50%; 
+#save-btn {
+  width: 40%;
+  border-radius: 20px;
+  transform:translate(190px,-10px);
+  margin-left: 0px;
 }
-
-
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(20px); 
-} */
+#success-msg {
+  display: none;
+  color: white;
+}
