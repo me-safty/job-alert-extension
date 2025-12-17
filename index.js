@@ -33,7 +33,17 @@ document.getElementById("max-rate").addEventListener("blur", function () {
 //  Load Saved Settings
 // =======================
 chrome.storage.local.get(
-  ["apiKey", "chatId", "isTelegramMessagesOn", "notes", "salaryType", "minHire", "maxHire", "minRate", "maxRate"],
+  [
+    "apiKey",
+    "chatId",
+    "isTelegramMessagesOn",
+    "notes",
+    "salaryType",
+    "minHire",
+    "maxHire",
+    "minRate",
+    "maxRate",
+  ],
   function (items) {
     apiInput.value = items.apiKey || "";
     chatIdInput.value = items.chatId || "";
@@ -42,7 +52,9 @@ chrome.storage.local.get(
     if (items.notes) notesBox.value = items.notes;
 
     if (items.salaryType) {
-      document.querySelector(`input[name="jobType"][value="${items.salaryType}"]`).checked = true;
+      document.querySelector(
+        `input[name="jobType"][value="${items.salaryType}"]`
+      ).checked = true;
     }
 
     // Load hire rate as numbers
@@ -54,10 +66,14 @@ chrome.storage.local.get(
 
     // Load decimal job rate
     if (items.minRate !== undefined)
-      document.getElementById("min-rate").value = parseFloat(items.minRate).toFixed(1);
+      document.getElementById("min-rate").value = parseFloat(
+        items.minRate
+      ).toFixed(1);
 
     if (items.maxRate !== undefined)
-      document.getElementById("max-rate").value = parseFloat(items.maxRate).toFixed(1);
+      document.getElementById("max-rate").value = parseFloat(
+        items.maxRate
+      ).toFixed(1);
   }
 );
 
@@ -90,10 +106,17 @@ document.getElementById("cool-btn").addEventListener("click", async () => {
         let el;
 
         if (url.includes("details")) {
-          el = document.querySelector('[data-test="Description Description"]');
+          // el = document.querySelector('[data-test="Description Description"]');
+          el = document.querySelector("div.break.mt-2");
         } else {
-          const jobTile = document.querySelector(".job-tile.air3-card.air3-card-list");
-          if (jobTile && jobTile.children[2] && jobTile.children[2].children[2]) {
+          const jobTile = document.querySelector(
+            ".job-tile.air3-card.air3-card-list"
+          );
+          if (
+            jobTile &&
+            jobTile.children[2] &&
+            jobTile.children[2].children[2]
+          ) {
             el = jobTile.children[2].children[2];
           }
         }
@@ -109,7 +132,8 @@ document.getElementById("cool-btn").addEventListener("click", async () => {
           const notes = res.notes || "";
           const finalText = jobDescription + (notes ? "\n\n" + notes : "");
 
-          const reactAppUrl = "http://localhost:5173/?desc=" + encodeURIComponent(finalText);
+          const reactAppUrl =
+            "http://localhost:5173/?desc=" + encodeURIComponent(finalText);
           chrome.tabs.create({ url: reactAppUrl, active: true });
 
           chrome.runtime.sendMessage({
@@ -128,7 +152,9 @@ document.getElementById("cool-btn").addEventListener("click", async () => {
 // Save Settings
 // =======================
 document.getElementById("save-settings").addEventListener("click", () => {
-  const salaryType = document.querySelector('input[name="jobType"]:checked').value;
+  const salaryType = document.querySelector(
+    'input[name="jobType"]:checked'
+  ).value;
 
   // Extract hire rates as numbers (no %)
   const minHire = parseInt(document.getElementById("min-hire").value);
@@ -152,17 +178,20 @@ document.getElementById("save-settings").addEventListener("click", () => {
     return;
   }
 
-  chrome.storage.local.set({ salaryType, minHire, maxHire, minRate, maxRate }, () => {
-    const msg = document.getElementById("success-msg");
-    msg.style.display = "block";
-    setTimeout(() => (msg.style.display = "none"), 2000);
+  chrome.storage.local.set(
+    { salaryType, minHire, maxHire, minRate, maxRate },
+    () => {
+      const msg = document.getElementById("success-msg");
+      msg.style.display = "block";
+      setTimeout(() => (msg.style.display = "none"), 2000);
 
-    console.log("Settings saved:", {
-      salaryType,
-      minHire,
-      maxHire,
-      minRate,
-      maxRate,
-    });
-  });
+      console.log("Settings saved:", {
+        salaryType,
+        minHire,
+        maxHire,
+        minRate,
+        maxRate,
+      });
+    }
+  );
 });
