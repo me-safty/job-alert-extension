@@ -9,7 +9,7 @@ let savedSalaryType, savedMinHire, savedMaxHire, savedMinRate, savedMaxRate;
 
 let name, level, type, priceWord;
 let statsElement, statsText, divElement, divText;
-let rateElement, rate, country, spent;
+let rateElement, rate, country, spent, ratingEl;
 let jobLink,
   connectElement,
   requiredConnects,
@@ -140,9 +140,10 @@ function getJobDescription(job) {
       job?.children[2]?.children[0]?.children[3]?.children[0]?.innerText;
     spent = `spent: ${job?.children[2]?.children[0]?.children[2]?.children[0]?.children[0]?.innerText}`;
 
-    jobLink =
-      job?.children[1].children[0].children[1].children[0].children[0]
-        .children[0].href;
+    const jobLink =
+      job?.children?.[1]?.children?.[0]?.children?.[1]?.children?.[0]
+        ?.children?.[0]?.children?.[0]?.href ?? null;
+
     connectElement = document.querySelector('div[data-test="ConnectsDesktop"]');
     requiredConnects = connectElement
       ? connectElement.children[0].innerText
@@ -174,32 +175,36 @@ function getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job) {
 
   setTimeout(() => {
     const jobDetails = getJobDescription(job);
-    jobSalaryType = job?.children[2]?.children[1]?.children[0]?.innerText.slice(
-      0,
-      3
-    );
+    const jobSalaryType =
+      job?.children?.[2]?.children?.[1]?.children?.[0]?.innerText?.slice(
+        0,
+        3
+      ) ?? null;
 
-    const hireRate = parseFloat(
+    const hireRate =
       document
         .querySelector('li[data-qa="client-job-posting-stats"]')
-        .children[1].innerText.slice(0, 3)
-    );
-    //     const ratingEl = document.querySelectorAll(".air3-rating-foreground")[9];
+        ?.children?.[1]?.innerText?.slice(0, 3) ?? null;
+    jobDetails.rate_mainMenu = document.querySelectorAll(
+      ".air3-rating-foreground"
+    )[0];
 
-    // if (!ratingEl) {
-    //   console.log("Not found");
-    // } else {
+    if (!jobDetails.rate_mainMenu) {
+      console.log("❌ Rating element not found");
+    } else {
+      const parentWidth = jobDetails.rate_mainMenu.parentElement.offsetWidth;
+      const currentWidth = jobDetails.rate_mainMenu.offsetWidth;
 
-    //   const parentWidth = ratingEl.parentElement.offsetWidth;
-    //   const currentWidth = ratingEl.offsetWidth;
+      const widthPercent = (currentWidth / parentWidth) * 100;
+      const rating = (widthPercent / 100) * 5;
 
-    //   const widthPercent = (currentWidth / parentWidth) * 100;
-    //   const rating = (widthPercent / 100) * 5;
-
-    //   console.log("⭐ Rating:", rating.toFixed(1), "/ 5");
-    // }
+      console.log("⭐ Rating:", rating.toFixed(1), "/ 5");
+    }
 
     const jobRate = parseFloat(jobDetails.rate) || 0;
+    console.log("💲 Job Rate:", jobRate);
+    // const jobRate =
+    //   jobDetails.rate != null ? parseFloat(jobDetails.rate) : null;
 
     // تحقق من الـ Salary Type
     const typeMatch =
@@ -212,7 +217,13 @@ function getAlertForFirstJob(apiKey, chatId, isTelegramMessagesOn, job) {
     );
     console.log(hireRate);
     const hireRateMatch = hireRate >= savedMinHire && hireRate <= savedMaxHire;
-    const jobRateMatch = jobRate >= savedMinRate && jobRate <= savedMaxRate;
+    // const jobRateMatch = jobRate >= savedMinRate && jobRate <= savedMaxRate;
+    const jobRateMatch =
+      savedMinRate != null &&
+      savedMaxRate != null &&
+      jobRate != null &&
+      jobRate >= savedMinRate &&
+      jobRate <= savedMaxRate;
 
     if (typeMatch && hireRateMatch && jobRateMatch) {
       sendChromeNotification(
